@@ -1,0 +1,6 @@
+{
+  "name": "AcademiaGrade - Student Result Management System",
+  "description": "Comprehensive Higher Education Academic Result & Grading System for Admins, Faculty, and Students featuring automated 10-point CGPA calculations, bulk marks entry, and printable official mark sheets.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
