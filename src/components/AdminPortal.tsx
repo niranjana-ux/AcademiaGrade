@@ -25,6 +25,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { exportToCSV } from '../utils/gradeCalculator';
+import { ConfirmDialog } from './ConfirmDialog';
 
 interface AdminPortalProps {
   activeTab: string;
@@ -59,6 +60,19 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   const [courseSearch, setCourseSearch] = useState('');
   const [courseDeptFilter, setCourseDeptFilter] = useState('ALL');
 
+  // Confirm dialog state (replaces window.confirm)
+  const [confirmState, setConfirmState] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+  });
+
   // Exam Status Transition Handler
   const handleUpdateExamStatus = (exam: ExamSession, newStatus: ExamSession['status']) => {
     const updated: ExamSession = {
@@ -71,17 +85,29 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   };
 
   const handleDeleteStudent = (id: string, name: string) => {
-    if (window.confirm(`Are you sure you want to remove student "${name}"?`)) {
-      StorageService.deleteStudent(id);
-      onDataChanged();
-    }
+    setConfirmState({
+      isOpen: true,
+      title: 'Remove Student Record',
+      message: `Are you sure you want to remove student "${name}"? This action cannot be undone.`,
+      onConfirm: () => {
+        StorageService.deleteStudent(id);
+        setConfirmState((prev) => ({ ...prev, isOpen: false }));
+        onDataChanged();
+      },
+    });
   };
 
   const handleDeleteCourse = (id: string, name: string) => {
-    if (window.confirm(`Are you sure you want to remove course "${name}"?`)) {
-      StorageService.deleteCourse(id);
-      onDataChanged();
-    }
+    setConfirmState({
+      isOpen: true,
+      title: 'Remove Curriculum Course',
+      message: `Are you sure you want to remove course "${name}"? This will affect marks linked to this course.`,
+      onConfirm: () => {
+        StorageService.deleteCourse(id);
+        setConfirmState((prev) => ({ ...prev, isOpen: false }));
+        onDataChanged();
+      },
+    });
   };
 
   const handleExportAllStudentsCSV = () => {
@@ -701,6 +727,17 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
           </div>
         </div>
       )}
+
+      {/* Confirmation Dialog for Record Deletions */}
+      <ConfirmDialog
+        isOpen={confirmState.isOpen}
+        title={confirmState.title}
+        message={confirmState.message}
+        confirmLabel="Delete"
+        isDestructive={true}
+        onConfirm={confirmState.onConfirm}
+        onCancel={() => setConfirmState((prev) => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 };

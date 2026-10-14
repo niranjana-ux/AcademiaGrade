@@ -33,6 +33,8 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({ initialStudentId }
   const [selectedSemesterTab, setSelectedSemesterTab] = useState<number | null>(null);
   const [isMarkSheetModalOpen, setIsMarkSheetModalOpen] = useState(false);
 
+  const [searchError, setSearchError] = useState('');
+
   const transcript = StorageService.getStudentTranscript(selectedStudentId);
 
   // When searching by roll number
@@ -45,8 +47,9 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({ initialStudentId }
     if (found) {
       setSelectedStudentId(found.id);
       setSelectedSemesterTab(null);
+      setSearchError('');
     } else {
-      alert(`No student found with register number or name "${searchQuery}". Try "CS202401", "CS202402", or "IT202401".`);
+      setSearchError(`No student found with identifier "${searchQuery}". Please select or enter a valid register number (e.g. CS202401).`);
     }
   };
 
@@ -54,6 +57,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({ initialStudentId }
     setSelectedStudentId(studentId);
     setSearchQuery(rollNo);
     setSelectedSemesterTab(null);
+    setSearchError('');
   };
 
   if (!transcript) {
@@ -85,24 +89,32 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({ initialStudentId }
             </p>
           </div>
 
-          <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
-            <div className="relative min-w-56">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Enter Register No (e.g. CS202401)..."
-                className="w-full pl-9 pr-3 py-1.5 border border-slate-300 rounded-lg text-xs font-mono uppercase text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <button
-              type="submit"
-              className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-xs shadow-xs"
-            >
-              Search
-            </button>
-          </form>
+          <div className="flex flex-col items-end gap-1">
+            <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
+              <div className="relative min-w-56">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    if (searchError) setSearchError('');
+                  }}
+                  placeholder="Enter Register No (e.g. CS202401)..."
+                  className="w-full pl-9 pr-3 py-1.5 border border-slate-300 rounded-lg text-xs font-mono uppercase text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <button
+                type="submit"
+                className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-xs shadow-xs"
+              >
+                Search
+              </button>
+            </form>
+            {searchError && (
+              <span className="text-[11px] text-red-600 font-medium">{searchError}</span>
+            )}
+          </div>
         </div>
 
         {/* Quick demo student buttons */}

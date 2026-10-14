@@ -1,22 +1,20 @@
 @import "tailwindcss";
 
-@layer base {
-  :root {
-    --font-heading: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-    --font-body: 'Public Sans', system-ui, -apple-system, sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
-  }
+:root {
+  --font-heading: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-body: 'Public Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
 
-  body {
-    font-family: var(--font-body);
-    color: #0f172a;
-    background-color: #f8fafc;
-    -webkit-font-smoothing: antialiased;
-  }
+body {
+  font-family: var(--font-body);
+  color: #0f172a;
+  background-color: #f8fafc;
+  -webkit-font-smoothing: antialiased;
+}
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-heading);
-  }
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
 }
 
 /* Print-specific layout for authentic official academic transcript / mark sheet */

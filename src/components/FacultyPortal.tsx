@@ -63,6 +63,7 @@ export const FacultyPortal: React.FC<FacultyPortalProps> = ({ onDataChanged }) =
   const [searchFilter, setSearchFilter] = useState('');
   const [isCsvModalOpen, setIsCsvModalOpen] = useState(false);
   const [saveSuccessMsg, setSaveSuccessMsg] = useState('');
+  const [saveErrorMsg, setSaveErrorMsg] = useState('');
 
   // Load existing mark records into local editable rows
   useEffect(() => {
@@ -162,9 +163,11 @@ export const FacultyPortal: React.FC<FacultyPortalProps> = ({ onDataChanged }) =
   const handleSaveAll = () => {
     const hasAnyErrors = rows.some((r) => r.hasError);
     if (hasAnyErrors) {
-      alert('Please fix out-of-range mark errors before saving.');
+      setSaveErrorMsg('Cannot save: please correct out-of-range mark errors highlighted in red.');
+      setTimeout(() => setSaveErrorMsg(''), 5000);
       return;
     }
+    setSaveErrorMsg('');
 
     const recordsToSave: MarkRecord[] = rows
       .filter((r) => r.internal !== '' || r.external !== '')
@@ -360,6 +363,13 @@ export const FacultyPortal: React.FC<FacultyPortalProps> = ({ onDataChanged }) =
         <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs flex items-center gap-2 shadow-xs">
           <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
           <span className="font-medium">{saveSuccessMsg}</span>
+        </div>
+      )}
+
+      {saveErrorMsg && (
+        <div className="p-3.5 bg-red-50 border border-red-200 text-red-800 rounded-xl text-xs flex items-center gap-2 shadow-xs">
+          <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
+          <span className="font-medium">{saveErrorMsg}</span>
         </div>
       )}
 

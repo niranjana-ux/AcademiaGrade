@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Printer, X, Award, ShieldCheck, Download } from 'lucide-react';
 import { Course, ExamSession, StudentTranscript } from '../types';
 import crestImage from '../assets/images/university_crest_seal_1791952957414.jpg';
@@ -28,14 +28,20 @@ export const OfficialMarkSheetModal: React.FC<OfficialMarkSheetModalProps> = ({
   const targetMarks = targetSummary ? targetSummary.marks : [];
   const currentExam = exams.find((e) => e.semester === (targetSummary?.semester || student.semester));
 
+  const [printNotice, setPrintNotice] = useState<string | null>(null);
+
   const handlePrint = () => {
-    window.print();
+    try {
+      window.print();
+    } catch {
+      setPrintNotice('Print preview is restricted in sandboxed iframes. Use your browser Print option to save as PDF.');
+    }
   };
 
   const serialNo = `AG-2026-${student.registerNo}-${targetSummary?.semester || 1}`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 p-4 overflow-y-auto backdrop-blur-xs">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 p-4 overflow-y-auto backdrop-blur-sm">
       <div className="relative w-full max-w-4xl bg-white rounded-xl shadow-2xl my-8 overflow-hidden border border-slate-200">
         {/* Top Control Bar (Hidden when printing) */}
         <div className="no-print flex items-center justify-between px-6 py-4 bg-slate-900 text-white border-b border-slate-800">
@@ -63,6 +69,12 @@ export const OfficialMarkSheetModal: React.FC<OfficialMarkSheetModalProps> = ({
             </button>
           </div>
         </div>
+
+        {printNotice && (
+          <div className="no-print p-3 bg-amber-50 border-b border-amber-200 text-amber-800 text-xs px-6">
+            {printNotice}
+          </div>
+        )}
 
         {/* Printable Mark Sheet Document Body */}
         <div className="print-page-container p-8 sm:p-12 bg-white text-slate-900 font-sans">

@@ -9,6 +9,7 @@ import { AddStudentModal } from './components/AddStudentModal';
 import { AddCourseModal } from './components/AddCourseModal';
 import { AddExamModal } from './components/AddExamModal';
 import { OfficialMarkSheetModal } from './components/OfficialMarkSheetModal';
+import { ConfirmDialog } from './components/ConfirmDialog';
 
 export default function App() {
   const [currentRole, setCurrentRole] = useState<Role>('admin');
@@ -19,6 +20,7 @@ export default function App() {
   const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
   const [isAddCourseOpen, setIsAddCourseOpen] = useState(false);
   const [isAddExamOpen, setIsAddExamOpen] = useState(false);
+  const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
   const [transcriptModalStudentId, setTranscriptModalStudentId] = useState<string | null>(null);
 
   const departments = StorageService.getDepartments();
@@ -29,11 +31,10 @@ export default function App() {
     setRefreshKey((k) => k + 1);
   };
 
-  const handleResetData = () => {
-    if (window.confirm('Reset the database to initial institutional demo records?')) {
-      StorageService.resetToDefaults();
-      setRefreshKey((k) => k + 1);
-    }
+  const handleConfirmReset = () => {
+    StorageService.resetToDefaults();
+    setIsResetConfirmOpen(false);
+    setRefreshKey((k) => k + 1);
   };
 
   const handleSaveStudent = (newStudent: Student) => {
@@ -64,7 +65,7 @@ export default function App() {
         onRoleChange={setCurrentRole}
         activeNavTab={activeNavTab}
         onNavTabChange={setActiveNavTab}
-        onResetData={handleResetData}
+        onResetData={() => setIsResetConfirmOpen(true)}
       />
 
       {/* Main Viewport Container */}
@@ -139,6 +140,17 @@ export default function App() {
           onClose={() => setTranscriptModalStudentId(null)}
         />
       )}
+
+      {/* Confirmation Dialog for Resetting Data */}
+      <ConfirmDialog
+        isOpen={isResetConfirmOpen}
+        title="Reset Academic Database"
+        message="This will restore all departments, courses, faculty, students, and marks to the fresh initial higher education demo state. Any custom additions will be cleared."
+        confirmLabel="Reset All Data"
+        isDestructive={true}
+        onConfirm={handleConfirmReset}
+        onCancel={() => setIsResetConfirmOpen(false)}
+      />
     </div>
   );
 }
